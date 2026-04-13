@@ -6,13 +6,13 @@ import { GoogleGenAI } from "@google/genai";
 
 // Utility functions
 function isTransactionDue(transaction: any) {
-  // If no lastProcessed date, transaction is due
-  if (!transaction.lastProcessed) return true;
+  // A transaction is only due if it has a nextRecurringDate set and it is <= today.
+  // We intentionally do NOT treat lastProcessed:null as "always due", because that
+  // would cause brand-new recurring templates to be processed immediately on creation.
+  if (!transaction.nextRecurringDate) return false;
 
   const today = new Date();
   const nextDue = new Date(transaction.nextRecurringDate);
-
-  // Compare with nextDue date
   return nextDue <= today;
 }
 
@@ -127,18 +127,19 @@ export const triggerRecurringTransactions = inngest.createFunction(
     const recurringTransactions = await step.run(
       "fetch-recurring-transactions",
       async () => {
+        // Only pick up templates whose nextRecurringDate has arrived.
+        // Using lastProcessed:null as a fallback is intentionally removed —
+        // it caused brand-new templates (nextRecurringDate = tomorrow) to be
+        // processed on the same day they were created.
+        // Generated instances have nextRecurringDate:null so they are
+        // never matched by the lte filter (NULL comparisons in Postgres = false).
         return await prisma.transaction.findMany({
           where: {
             isRecurring: true,
             status: "COMPLETED",
-            OR: [
-              { lastProcessed: null },
-              {
-                nextRecurringDate: {
-                  lte: new Date(),
-                },
-              },
-            ],
+            nextRecurringDate: {
+              lte: new Date(),
+            },
           },
         });
       }
