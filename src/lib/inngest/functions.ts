@@ -68,7 +68,10 @@ export const processRecurringTransaction = inngest.createFunction(
 
       // Create new transaction and update account balance in a transaction
       await prisma.$transaction(async (tx) => {
-        // Create new transaction
+        // Create new transaction instance — keep it marked as recurring
+        // so the UI badge shows "Recurring". We set lastProcessed = now
+        // and nextRecurringDate = null so the daily cron never re-processes
+        // this instance (NULL in a `lte` Prisma filter is non-matching in Postgres).
         await tx.transaction.create({
           data: {
             type: transaction.type,
@@ -78,7 +81,11 @@ export const processRecurringTransaction = inngest.createFunction(
             category: transaction.category,
             userId: transaction.userId,
             accountId: transaction.accountId,
-            isRecurring: false,
+            status: "COMPLETED",
+            isRecurring: true,
+            recurringInterval: transaction.recurringInterval,
+            lastProcessed: new Date(),
+            nextRecurringDate: null,
           },
         });
 
