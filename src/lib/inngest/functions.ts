@@ -35,7 +35,7 @@ function calculateNextRecurringDate(date: Date, interval: string) {
   return next;
 }
 
-export const processRecurringTransaction = (inngest.createFunction as any)(
+export const processRecurringTransaction = inngest.createFunction(
   {
     id: "process-recurring-transaction",
     name: "Process Recurring Transaction",
@@ -44,9 +44,9 @@ export const processRecurringTransaction = (inngest.createFunction as any)(
       period: "1m", // per minute
       key: "event.data.userId", // Throttle per user
     },
+    triggers: [{ event: "transaction.recurring.process" }],
   },
-  { event: "transaction.recurring.process" },
-  async ({ event, step }: any) => {
+  async ({ event, step }) => {
     // Validate event data
     if (!event?.data?.transactionId || !event?.data?.userId) {
       console.error("Invalid event data:", event);
@@ -110,13 +110,13 @@ export const processRecurringTransaction = (inngest.createFunction as any)(
 );
 
 // Trigger recurring transactions with batching
-export const triggerRecurringTransactions = (inngest.createFunction as any)(
+export const triggerRecurringTransactions = inngest.createFunction(
   {
     id: "trigger-recurring-transactions", // Unique ID,
     name: "Trigger Recurring Transactions",
+    triggers: [{ cron: "0 0 * * *" }], // Daily at midnight
   },
-  { cron: "0 0 * * *" }, // Daily at midnight
-  async ({ step }: any) => {
+  async ({ step }) => {
     const recurringTransactions = await step.run(
       "fetch-recurring-transactions",
       async () => {
@@ -231,13 +231,13 @@ async function generateFinancialInsights(stats: any, month: string) {
   }
 }
 
-export const generateMonthlyReports = (inngest.createFunction as any)(
+export const generateMonthlyReports = inngest.createFunction(
   {
     id: "generate-monthly-reports",
     name: "Generate Monthly Reports",
+    triggers: [{ cron: "0 0 1 * *" }], // First day of each month
   },
-  { cron: "0 0 1 * *" }, // First day of each month
-  async ({ step }: any) => {
+  async ({ step }) => {
     const users = await step.run("fetch-users", async () => {
       return await prisma.user.findMany({
         include: { accounts: true },
@@ -285,10 +285,13 @@ function isNewMonth(lastAlertDate: Date, currentDate: Date) {
 }
 
 // 3. Budget Alerts with Event Batching
-export const checkBudgetAlerts = (inngest.createFunction as any)(
-  { name: "Check Budget Alerts", id: "check-budget-alerts" },
-  { cron: "0 */6 * * *" }, // Every 6 hours
-  async ({ step }: any) => {
+export const checkBudgetAlerts = inngest.createFunction(
+  { 
+    name: "Check Budget Alerts", 
+    id: "check-budget-alerts",
+    triggers: [{ cron: "0 */6 * * *" }], // Every 6 hours
+  },
+  async ({ step }) => {
     const budgets = await step.run("fetch-budgets", async () => {
       return await prisma.budget.findMany({
         include: {
