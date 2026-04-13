@@ -48,7 +48,7 @@ export function EditBudgetDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {children ? (
-        <DialogTrigger render={children} />
+        <DialogTrigger render={children as React.ReactElement} />
       ) : (
         <DialogTrigger className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
           <Pencil className="h-4 w-4" />

@@ -37,7 +37,7 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
           className="fill-muted-foreground"
         />
         <Tooltip
-          formatter={(value: number | undefined) =>
+          formatter={(value: any) =>
             `$${(value ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}`
           }
           contentStyle={{

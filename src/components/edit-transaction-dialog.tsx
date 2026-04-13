@@ -67,6 +67,8 @@ function EditTransactionForm({
   setStatus,
   isRecurring,
   setIsRecurring,
+  recurringInterval,
+  setRecurringInterval,
   doneRef,
 }: {
   transaction: Transaction;
@@ -83,11 +85,11 @@ function EditTransactionForm({
   accountId: string;
   setAccountId: (v: string) => void;
   status: string;
-  setStatus: (v: string) => void;
+  setStatus: (v: any) => void;
   isRecurring: boolean;
   setIsRecurring: (v: boolean) => void;
   recurringInterval: string;
-  setRecurringInterval: (v: string) => void;
+  setRecurringInterval: (v: any) => void;
   doneRef: React.MutableRefObject<() => void>;
 }) {
   const [state, formAction, isPending] = useActionState(updateTransactionAction, null);

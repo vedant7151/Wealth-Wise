@@ -57,7 +57,7 @@ function CreateTransactionForm({
   isRecurring: boolean;
   setIsRecurring: (v: boolean) => void;
   recurringInterval: string;
-  setRecurringInterval: (v: string) => void;
+  setRecurringInterval: (v: any) => void;
   doneRef: React.MutableRefObject<() => void>;
 }) {
   const [state, formAction, isPending] = useActionState(createTransactionAction, null);

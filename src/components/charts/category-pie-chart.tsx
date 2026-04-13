@@ -65,7 +65,7 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
           ))}
         </Pie>
         <Tooltip
-          formatter={(value: number | undefined) =>
+          formatter={(value: any) =>
             `$${(value ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}`
           }
           contentStyle={{
