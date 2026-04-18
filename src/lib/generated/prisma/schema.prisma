@@ -18,6 +18,8 @@ model User {
   budgets      Budget[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  portfolios   Portfolio[]
+  wallet       Wallet?
 
   @@map("users")
 }
@@ -97,4 +99,51 @@ enum RecurringInterval {
   WEEKLY
   MONTHLY
   YEARLY
+}
+
+model Portfolio {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symbol     String
+  quantity   Float
+  totalSpent Float    @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, symbol])
+  @@index([userId])
+  @@map("portfolios")
+}
+
+model Wallet {
+  id           String              @id @default(uuid())
+  userId       String              @unique
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance      Float               @default(0)
+  transactions WalletTransaction[]
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@map("wallets")
+}
+
+model WalletTransaction {
+  id          String                @id @default(uuid())
+  walletId    String
+  wallet      Wallet                @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  type        WalletTransactionType
+  amount      Float
+  description String?
+  status      TransactionStatus     @default(COMPLETED)
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  @@index([walletId])
+  @@map("wallet_transactions")
+}
+
+enum WalletTransactionType {
+  CREDIT
+  DEBIT
 }

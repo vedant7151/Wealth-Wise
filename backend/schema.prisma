@@ -2,22 +2,24 @@ generator client {
   provider = "prisma-client-js"
   output   = "../src/lib/generated/prisma"
 }
+
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
-
 model User {
-  id            String    @id @default(uuid())
-  clerkUserId   String    @unique // clerk user id
-  email         String    @unique
-  name          String?
-  imageUrl      String?
-  transactions  Transaction[]
-  accounts      Account[]
-  budgets       Budget[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id           String        @id @default(uuid())
+  clerkUserId  String        @unique // clerk user id
+  email        String        @unique
+  name         String?
+  imageUrl     String?
+  transactions Transaction[]
+  accounts     Account[]
+  budgets      Budget[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  portfolios   Portfolio[]
+  wallet       Wallet?
 
   @@map("users")
 }
@@ -26,7 +28,7 @@ model Account {
   id           String        @id @default(uuid())
   name         String
   type         AccountType
-  balance      Float        @default(0) // will ask inital balance while creating an account
+  balance      Float         @default(0) // will ask inital balance while creating an account
   isDefault    Boolean       @default(false)
   userId       String
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -39,39 +41,38 @@ model Account {
 }
 
 model Transaction {
-  id                String            @id @default(uuid())
-  type             TransactionType
-  amount           Float 
-  description      String?
-  date             DateTime
-  category         String           
-  receiptUrl       String?
-  isRecurring      Boolean           @default(false)
+  id                String             @id @default(uuid())
+  type              TransactionType
+  amount            Float
+  description       String?
+  date              DateTime
+  category          String
+  receiptUrl        String?
+  isRecurring       Boolean            @default(false)
   recurringInterval RecurringInterval? // Only used if isRecurring is true
-  nextRecurringDate DateTime?         // Next date for recurring transaction
-  lastProcessed    DateTime?         // Last time this recurring transaction was processed
-  status           TransactionStatus  @default(COMPLETED)
-  userId           String
-  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accountId        String
-  account          Account           @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  nextRecurringDate DateTime? // Next date for recurring transaction
+  lastProcessed     DateTime? // Last time this recurring transaction was processed
+  status            TransactionStatus  @default(COMPLETED)
+  userId            String
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId         String
+  account           Account            @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 
   @@index([userId])
   @@index([accountId])
   @@map("transactions")
 }
 
-
 model Budget {
-  id          String       @id @default(uuid())
-  amount      Float 
-  lastAlertSent DateTime?  // Track when the last alert was sent
-  userId      String       @unique
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id            String    @id @default(uuid())
+  amount        Float
+  lastAlertSent DateTime? // Track when the last alert was sent
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([userId])
   @@map("budgets")
@@ -98,4 +99,51 @@ enum RecurringInterval {
   WEEKLY
   MONTHLY
   YEARLY
+}
+
+model Portfolio {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symbol     String
+  quantity   Float
+  totalSpent Float    @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, symbol])
+  @@index([userId])
+  @@map("portfolios")
+}
+
+model Wallet {
+  id           String              @id @default(uuid())
+  userId       String              @unique
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance      Float               @default(0)
+  transactions WalletTransaction[]
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@map("wallets")
+}
+
+model WalletTransaction {
+  id          String                @id @default(uuid())
+  walletId    String
+  wallet      Wallet                @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  type        WalletTransactionType
+  amount      Float
+  description String?
+  status      TransactionStatus     @default(COMPLETED)
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  @@index([walletId])
+  @@map("wallet_transactions")
+}
+
+enum WalletTransactionType {
+  CREDIT
+  DEBIT
 }

@@ -2,8 +2,25 @@ import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
+import { aj, validateEmail } from '@/lib/arcjet'
 
 export async function POST(req: Request) {
+  // ── Arcjet: rate limit + bot detection ─────────────────────────────────
+  const decision = await aj.protect(req as any);
+  if (decision.isDenied()) {
+    if (decision.reason.isRateLimit()) {
+      return new Response(JSON.stringify({ error: 'Too many requests' }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    return new Response(JSON.stringify({ error: 'Bot traffic not allowed' }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+  // ────────────────────────────────────────────────────────────────────────
+
   const SIGNING_SECRET = process.env.CLERK_WEBHOOK_SECRET
 
   if (!SIGNING_SECRET) {
@@ -56,6 +73,19 @@ export async function POST(req: Request) {
       const name = [first_name, last_name].filter(Boolean).join(" ") || "User"
 
       if (primaryEmail) {
+        // ── Arcjet: validate the incoming email before persisting ─────────
+        const emailDecision = await aj
+          .withRule(validateEmail({ mode: "LIVE", deny: ["DISPOSABLE", "NO_MX_RECORDS", "INVALID"] }))
+          .protect(req as any, { email: primaryEmail });
+        if (emailDecision.isDenied() && emailDecision.reason.isEmail()) {
+          console.warn(`Blocked disposable/invalid email on user.created: ${primaryEmail}`);
+          return new Response(
+            JSON.stringify({ error: 'Invalid or disposable email' }),
+            { status: 400, headers: { 'Content-Type': 'application/json' } }
+          );
+        }
+        // ─────────────────────────────────────────────────────────────────
+
         await prisma.user.create({
           data: {
             clerkUserId: id,

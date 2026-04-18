@@ -169,6 +169,35 @@ exports.Prisma.BudgetScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PortfolioScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  symbol: 'symbol',
+  quantity: 'quantity',
+  totalSpent: 'totalSpent',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WalletScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  balance: 'balance',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WalletTransactionScalarFieldEnum = {
+  id: 'id',
+  walletId: 'walletId',
+  type: 'type',
+  amount: 'amount',
+  description: 'description',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -206,11 +235,19 @@ exports.TransactionStatus = exports.$Enums.TransactionStatus = {
   FAILED: 'FAILED'
 };
 
+exports.WalletTransactionType = exports.$Enums.WalletTransactionType = {
+  CREDIT: 'CREDIT',
+  DEBIT: 'DEBIT'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Account: 'Account',
   Transaction: 'Transaction',
-  Budget: 'Budget'
+  Budget: 'Budget',
+  Portfolio: 'Portfolio',
+  Wallet: 'Wallet',
+  WalletTransaction: 'WalletTransaction'
 };
 
 /**

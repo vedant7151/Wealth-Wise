@@ -21,6 +21,9 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           <Link href="/accounts" className="text-muted-foreground transition-colors hover:text-foreground">
             Accounts
           </Link>
+          <Link href="/stocks" className="text-muted-foreground transition-colors hover:text-foreground">
+            Stocks
+          </Link>
         </nav>
         <div className="flex w-full items-center justify-end gap-4 md:ml-auto md:gap-2 lg:gap-4">
           <UserButton />
