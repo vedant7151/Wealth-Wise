@@ -3,8 +3,8 @@ import { getUserAccounts } from "@/actions/accounts";
 import { WalletTransferDialog } from "@/components/wallet/wallet-transfer-dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
-import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
-
+import { ArrowDownLeft, ArrowUpRight, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 export default async function WalletPage() {
   const [walletRes, accounts] = await Promise.all([
     getWallet(),
@@ -25,7 +25,12 @@ export default async function WalletPage() {
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8 max-w-5xl mx-auto w-full">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold md:text-3xl">Trading Wallet</h1>
+        <div className="flex items-center gap-4">
+          <Link href="/stocks" className="text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="h-6 w-6" />
+          </Link>
+          <h1 className="text-2xl font-semibold md:text-3xl">Trading Wallet</h1>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">

@@ -32,6 +32,7 @@ export function WalletTransferDialog({ type, accounts, walletBalance }: WalletTr
     handleSubmit,
     control,
     reset,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(transferSchema),
@@ -40,6 +41,16 @@ export function WalletTransferDialog({ type, accounts, walletBalance }: WalletTr
       amount: 0,
     },
   });
+
+  const watchAmount = Number(watch("amount")) || 0;
+  const watchAccountId = watch("accountId");
+
+  const selectedAccount = accounts.find((a) => a.id === watchAccountId);
+
+  const isAddOversized = !!(type === "add" && selectedAccount && watchAmount > selectedAccount.balance);
+  const isWithdrawOversized = !!(type === "withdraw" && watchAmount > walletBalance);
+
+  const isDisabled = isSubmitting || isAddOversized || isWithdrawOversized;
 
   const onSubmit = async (values: z.infer<typeof transferSchema>) => {
     if (type === "withdraw" && values.amount > walletBalance) {
@@ -112,9 +123,11 @@ export function WalletTransferDialog({ type, accounts, walletBalance }: WalletTr
             <Label htmlFor="amount">Amount</Label>
             <Input id="amount" type="number" step="0.01" {...register("amount")} />
             {errors.amount && <p className="text-sm text-red-500">{errors.amount.message}</p>}
+            {isAddOversized && <p className="text-sm text-red-500">Amount exceeds bank account balance (${selectedAccount?.balance.toFixed(2)}).</p>}
+            {isWithdrawOversized && <p className="text-sm text-red-500">Amount exceeds wallet balance (${walletBalance.toFixed(2)}).</p>}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" className="w-full" disabled={isDisabled}>
             {isSubmitting ? "Processing..." : "Confirm"}
           </Button>
         </form>
