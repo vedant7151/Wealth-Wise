@@ -71,8 +71,9 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
           contentStyle={{
             borderRadius: "8px",
             border: "1px solid hsl(var(--border))",
-            background: "hsl(var(--background))",
+            backgroundColor: "hsl(var(--background))",
           }}
+          itemStyle={{ color: "hsl(var(--foreground))" }}
         />
         <Legend
           formatter={(value) => (

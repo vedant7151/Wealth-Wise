@@ -62,7 +62,7 @@ export async function addFundsAction(
   })
 
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message }
+    return { error: parsed.error.issues[0].message }
   }
 
   try {
@@ -143,7 +143,7 @@ export async function withdrawFundsAction(
   })
 
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message }
+    return { error: parsed.error.issues[0].message }
   }
 
   try {

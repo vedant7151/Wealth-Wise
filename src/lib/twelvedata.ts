@@ -48,7 +48,7 @@ export async function getStockTimeSeries(symbol: string) {
     if (!response.ok) return [];
     const data = await response.json();
     if (data.status === "error" || !data.values) return [];
-    
+
     // Map to a chart-friendly format, reversed to show chronological order
     return data.values.reverse().map((item: any) => ({
       date: item.datetime,
@@ -69,7 +69,7 @@ export async function getBatchQuotes(symbols: string[]) {
     const response = await fetch(url, { next: { revalidate: 60 } });
     if (!response.ok) return {};
     const data = await response.json();
-    
+
     if (data.status === "error") return {};
 
     const prices: Record<string, number> = {};
@@ -87,3 +87,29 @@ export async function getBatchQuotes(symbols: string[]) {
     return {};
   }
 }
+
+export async function getExploreStocks() {
+  const apiKey = process.env.TWELVEDATA_API_KEY;
+  if (!apiKey) return [];
+
+  try {
+    const url = `https://api.twelvedata.com/stocks?exchange=NASDAQ&apikey=${apiKey}`;
+    const response = await fetch(url, { next: { revalidate: 86400 } });
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    if (data.status === "error" || !data.data) return [];
+
+    // Filter out rows without a name or symbol, and return all entries
+    return data.data
+      .filter((s: any) => s.name && s.symbol)
+      .map((stock: any) => ({
+        symbol: stock.symbol,
+        name: stock.name,
+        description: `${stock.type || "Stock"} \u2022 ${stock.country || "US"} \u2022 ${stock.currency || "USD"}`,
+      }));
+  } catch (error) {
+    return [];
+  }
+}
+

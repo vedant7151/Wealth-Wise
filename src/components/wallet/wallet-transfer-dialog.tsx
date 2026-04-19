@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { addFundsAction, withdrawFundsAction } from "@/actions/wallet";
@@ -27,7 +27,13 @@ export function WalletTransferDialog({ type, accounts, walletBalance }: WalletTr
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<z.infer<typeof transferSchema>>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(transferSchema),
     defaultValues: {
       accountId: "",
@@ -56,7 +62,7 @@ export function WalletTransferDialog({ type, accounts, walletBalance }: WalletTr
       } else {
         toast.success(type === "add" ? "Funds added successfully" : "Funds withdrawn successfully");
         setOpen(false);
-        form.reset();
+        reset();
       }
     } catch (e) {
       toast.error("An unexpected error occurred");
@@ -78,53 +84,42 @@ export function WalletTransferDialog({ type, accounts, walletBalance }: WalletTr
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="accountId">{type === "add" ? "From Bank Account" : "To Bank Account"}</Label>
+            <Controller
               name="accountId"
+              control={control}
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{type === "add" ? "From Bank Account" : "To Bank Account"}</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select an account" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {accounts.map(acc => (
-                         <SelectItem key={acc.id} value={acc.id}>
-                           {acc.name} (${acc.balance.toFixed(2)})
-                         </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <SelectTrigger id="accountId">
+                    <SelectValue placeholder="Select an account" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {accounts.map(acc => (
+                       <SelectItem key={acc.id} value={acc.id}>
+                         {acc.name} (${acc.balance.toFixed(2)})
+                       </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               )}
             />
-            
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Amount</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.01" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {errors.accountId && <p className="text-sm text-red-500">{errors.accountId.message}</p>}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="amount">Amount</Label>
+            <Input id="amount" type="number" step="0.01" {...register("amount")} />
+            {errors.amount && <p className="text-sm text-red-500">{errors.amount.message}</p>}
+          </div>
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Processing..." : "Confirm"}
-            </Button>
-          </form>
-        </Form>
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? "Processing..." : "Confirm"}
+          </Button>
+        </form>
       </DialogContent>
     </Dialog>
   );
 }
+

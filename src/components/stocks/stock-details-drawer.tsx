@@ -125,8 +125,15 @@ export function StockDetailsDrawer({ symbol, open, onClose, walletBalance, owned
                   <YAxis domain={['auto', 'auto']} hide />
                   <Tooltip 
                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                    formatter={(value: number) => [`$${value.toFixed(2)}`, 'Price']}
-                    labelFormatter={(label) => new Date(label).toDateString()}
+                    labelStyle={{ color: 'black' }}
+                    formatter={(value: any) => [`$${Number(value).toFixed(2)}`, 'Price']}
+                    labelFormatter={(label) => new Date(label).toLocaleString(undefined, { 
+                      month: 'short', 
+                      day: 'numeric', 
+                      year: 'numeric', 
+                      hour: 'numeric', 
+                      minute: '2-digit' 
+                    })}
                   />
                   <Line type="monotone" dataKey="price" stroke="#3b82f6" strokeWidth={3} dot={false} activeDot={{ r: 6 }} />
                 </LineChart>
