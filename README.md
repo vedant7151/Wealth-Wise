@@ -25,7 +25,7 @@ I built this project to transition from theoretical knowledge to production-read
 
 ## 🏗️ System Architecture
 
-![System Architecture Diagram](/Gemini_Generated_Image_n5l4hmn5l4hmn5l4.png)
+![System Architecture Diagram](/public/Gemini_Generated_Image_n5l4hmn5l4hmn5l4.png)
 
 ## 🛠️ Production Tools & Security
 
