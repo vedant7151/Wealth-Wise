@@ -198,6 +198,13 @@ exports.Prisma.WalletTransactionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.WatchlistScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  symbol: 'symbol',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -247,7 +254,8 @@ exports.Prisma.ModelName = {
   Budget: 'Budget',
   Portfolio: 'Portfolio',
   Wallet: 'Wallet',
-  WalletTransaction: 'WalletTransaction'
+  WalletTransaction: 'WalletTransaction',
+  Watchlist: 'Watchlist'
 };
 
 /**

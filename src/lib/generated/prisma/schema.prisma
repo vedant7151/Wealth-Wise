@@ -20,6 +20,7 @@ model User {
   updatedAt    DateTime      @updatedAt
   portfolios   Portfolio[]
   wallet       Wallet?
+  watchlists   Watchlist[]
 
   @@map("users")
 }
@@ -146,4 +147,16 @@ model WalletTransaction {
 enum WalletTransactionType {
   CREDIT
   DEBIT
+}
+
+model Watchlist {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symbol    String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, symbol])
+  @@index([userId])
+  @@map("watchlists")
 }

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { EditBudgetDialog } from "@/components/edit-budget-dialog";
 import { DefaultAccountSwitch } from "@/components/default-account-switch";
 import { AccountCard } from "@/components/account-card";
+import { ManageRecurringDialog } from "@/components/manage-recurring-dialog";
 
 
 export default async function DashboardPage() {
@@ -100,7 +101,10 @@ export default async function DashboardPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         {accounts.length > 0 && (
-          <CreateTransactionDialog accounts={accounts} defaultAccountId={primaryAccount?.id} />
+          <div className="flex items-center gap-2">
+            <ManageRecurringDialog accounts={accounts} />
+            <CreateTransactionDialog accounts={accounts} defaultAccountId={primaryAccount?.id} />
+          </div>
         )}
       </div>
 

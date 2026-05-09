@@ -6,9 +6,11 @@ import { AccountBalanceChart } from "@/components/charts/account-balance-chart";
 import { AccountCategoryChart } from "@/components/charts/account-category-chart";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
-import { Wallet } from "lucide-react";
+import { Wallet, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import Link from "next/link";
+import { ManageRecurringDialog } from "@/components/manage-recurring-dialog";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -86,6 +88,9 @@ export default async function AccountDetailPage({ params, searchParams }: { para
       <div className="grid gap-4 md:grid-cols-[1fr_auto]">
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-muted-foreground">
+            <Link href="/accounts" className="hover:text-foreground transition-colors mr-1">
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
             <Wallet className="w-5 h-5" />
             <span>Account Details</span>
           </div>
@@ -97,7 +102,10 @@ export default async function AccountDetailPage({ params, searchParams }: { para
             )}
           </div>
         </div>
-        <CreateTransactionDialog accounts={accounts} defaultAccountId={account.id} />
+        <div className="flex items-start gap-2">
+          <ManageRecurringDialog accountId={account.id} accounts={accounts} />
+          <CreateTransactionDialog accounts={accounts} defaultAccountId={account.id} />
+        </div>
       </div>
 
       {/* Summary Cards */}

@@ -432,3 +432,62 @@ export async function scanReceipt(formData: FormData) {
     return { error: error.message || "Failed to scan receipt" };
   }
 }
+
+export async function getRecurringTemplates(accountId?: string) {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const user = await prisma.user.findUnique({ where: { clerkUserId: userId } });
+    if (!user) throw new Error("User not found");
+
+    const where: any = { 
+      userId: user.id,
+      isRecurring: true,
+      nextRecurringDate: { not: null }
+    };
+
+    if (accountId) {
+      where.accountId = accountId;
+    }
+
+    const transactions = await prisma.transaction.findMany({
+      where,
+      orderBy: { nextRecurringDate: "asc" },
+      include: {
+        account: {
+          select: { name: true, id: true }
+        }
+      }
+    });
+
+    return { success: true, transactions };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+export async function cancelRecurringTransaction(transactionId: string) {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const user = await prisma.user.findUnique({ where: { clerkUserId: userId } });
+    if (!user) throw new Error("User not found");
+
+    await prisma.transaction.update({
+      where: { id: transactionId, userId: user.id },
+      data: {
+        isRecurring: false,
+        nextRecurringDate: null,
+      }
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/transactions");
+
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
