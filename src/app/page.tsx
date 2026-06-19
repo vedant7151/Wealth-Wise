@@ -9,8 +9,8 @@ export default function Home() {
       {/* Navbar */}
       <header className="px-6 lg:px-8 h-16 flex items-center border-b border-border/50 backdrop-blur-md sticky top-0 z-50">
         <Link className="flex items-center justify-center gap-2" href="#">
-          <Zap className="h-6 w-6 text-emerald-500" />
-          <span className="font-bold text-xl tracking-tight">Wealth</span>
+          {/* <Zap className="h-6 w-6 text-emerald-500" /> */}
+          <span className="font-bold text-xl tracking-tight">Wealth Wise</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6 items-center">
           <Link className="text-sm font-medium hover:text-emerald-400 transition-colors" href="#features">

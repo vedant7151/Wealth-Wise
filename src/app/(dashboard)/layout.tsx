@@ -26,7 +26,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
                     href="/dashboard"
                     className="flex justify-center items-center gap-2 text-2xl font-semibold text-emerald-400 mb-2"
                   >
-                    Wealth
+                    Wealth-Wise
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
@@ -66,7 +66,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         {/* Desktop Navigation */}
         <nav className="hidden md:flex flex-col gap-6 text-lg font-medium md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
           <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold md:text-base text-emerald-400">
-            Wealth
+            Wealth Wise
           </Link>
           <Link href="/dashboard" className="text-foreground transition-colors hover:text-emerald-400">
             Dashboard

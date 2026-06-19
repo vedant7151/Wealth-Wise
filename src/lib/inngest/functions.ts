@@ -294,8 +294,8 @@ function isNewMonth(lastAlertDate: Date, currentDate: Date) {
 
 // 3. Budget Alerts with Event Batching
 export const checkBudgetAlerts = inngest.createFunction(
-  { 
-    name: "Check Budget Alerts", 
+  {
+    name: "Check Budget Alerts",
     id: "check-budget-alerts",
     triggers: [{ cron: "0 */6 * * *" }], // Every 6 hours
   },
