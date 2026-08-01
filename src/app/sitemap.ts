@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next';
+import { getAbsoluteSiteUrl } from '@/lib/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://wealth-wise-tawny.vercel.app';
+  const baseUrl = getAbsoluteSiteUrl();
 
   return [
     {

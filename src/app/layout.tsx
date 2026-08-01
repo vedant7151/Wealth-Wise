@@ -3,6 +3,7 @@ import { Inter, Geist } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { getAbsoluteSiteUrl } from "@/lib/site";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -11,6 +12,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Wealth - AI Finance Platform",
   description: "AI-powered finance platform to track wealth, receipts, and budgets.",
+  metadataBase: new URL(getAbsoluteSiteUrl()),
 };
 
 export default function RootLayout({
